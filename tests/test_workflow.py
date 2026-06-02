@@ -14,6 +14,10 @@ def test_create_run_returns_source_backed_packet_pending_human_approval():
     assert run.eval is not None
     assert run.eval.passed is True
     assert run.eval.score == 100
+    assert run.selected_lane == "local_policy_synthesis"
+    assert run.provider_id == "local_policy_model_dry_run"
+    assert run.estimated_cost_units == 4.0
+    assert run.requires_human_gate is True
 
 
 def test_workflow_uses_only_allowlisted_tools():
@@ -29,5 +33,6 @@ def test_trace_contains_retrieval_tool_and_eval_events():
 
     assert "role_resolved" in event_types
     assert "retrieval_completed" in event_types
+    assert "routing_completed" in event_types
     assert "allowlisted_tools_completed" in event_types
     assert "eval_completed" in event_types

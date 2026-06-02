@@ -15,6 +15,9 @@ def test_langgraph_good_claim_routes_to_human_approval():
     assert run.eval.score >= 80
     assert run.packet.required_human_decision is True
     assert run.packet.citations
+    assert run.selected_lane == "local_policy_synthesis"
+    assert run.estimated_cost_units == 4.0
+    assert run.requires_human_gate is True
 
 
 def test_langgraph_uses_allowlisted_tools_only():
@@ -43,6 +46,10 @@ def test_langgraph_blocks_unsafe_external_action_request():
     assert run.packet is None
     assert run.policy_gate is not None
     assert run.policy_gate.blocks_tool_execution is True
+    assert run.selected_lane == "human_review_gate"
+    assert run.provider_id == "human_review_required"
+    assert run.blocked_action == "payment"
+    assert run.failure_or_escalation_reason is not None
     assert run.human_decision == "system: policy gate requires human review before tool execution"
     event_types = [event.event_type for event in run.trace]
     assert "graph_policy_gate" in event_types
@@ -76,6 +83,7 @@ def test_langgraph_trace_contains_expected_node_sequence():
     for expected in [
         "graph_run_created",
         "graph_preflight",
+        "graph_route",
         "graph_retrieve_context",
         "graph_plan",
         "graph_execute_tools",

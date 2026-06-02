@@ -1,0 +1,290 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "properties": {
+    "artifact_type": {
+      "const": "enterprise_controls_report"
+    },
+    "generated_at": {
+      "type": "string"
+    },
+    "metrics": {
+      "additionalProperties": false,
+      "properties": {
+        "avg_eval_score": {
+          "anyOf": [
+            {
+              "maximum": 100,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "blocked_runs": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "eval_pass_count": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "human_gate_count": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "lane_counts": {
+          "additionalProperties": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "type": "object"
+        },
+        "risk_flag_counts": {
+          "additionalProperties": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "type": "object"
+        },
+        "status_counts": {
+          "additionalProperties": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "type": "object"
+        },
+        "total_estimated_cost_units": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "total_runs": {
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "total_runs",
+        "status_counts",
+        "lane_counts",
+        "human_gate_count",
+        "blocked_runs",
+        "eval_pass_count",
+        "avg_eval_score",
+        "total_estimated_cost_units",
+        "risk_flag_counts"
+      ],
+      "type": "object"
+    },
+    "red_team_review": {
+      "additionalProperties": false,
+      "properties": {
+        "all_passed": {
+          "type": "boolean"
+        },
+        "artifact_type": {
+          "const": "red_team_review"
+        },
+        "case_count": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "cases": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "case_id": {
+                "type": "string"
+              },
+              "checks": {
+                "additionalProperties": {
+                  "type": "boolean"
+                },
+                "type": "object"
+              },
+              "expectation": {
+                "type": "string"
+              },
+              "observed": {
+                "additionalProperties": false,
+                "properties": {
+                  "blocked_action": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "citations": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  "estimated_cost_units": {
+                    "minimum": 0,
+                    "type": "number"
+                  },
+                  "event_types": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  "failure_or_escalation_reason": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "packet_created": {
+                    "type": "boolean"
+                  },
+                  "provider_id": {
+                    "type": "string"
+                  },
+                  "requires_human_gate": {
+                    "type": "boolean"
+                  },
+                  "routing_reason": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "run_id": {
+                    "type": "string"
+                  },
+                  "selected_lane": {
+                    "type": "string"
+                  },
+                  "status": {
+                    "enum": [
+                      "pending_human_approval",
+                      "human_review_required",
+                      "approved",
+                      "rejected",
+                      "escalated"
+                    ]
+                  },
+                  "tool_call_count": {
+                    "minimum": 0,
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "run_id",
+                  "status",
+                  "selected_lane",
+                  "provider_id",
+                  "estimated_cost_units",
+                  "requires_human_gate",
+                  "blocked_action",
+                  "tool_call_count",
+                  "packet_created",
+                  "citations",
+                  "event_types",
+                  "routing_reason",
+                  "failure_or_escalation_reason"
+                ],
+                "type": "object"
+              },
+              "passed": {
+                "type": "boolean"
+              },
+              "prompt": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "case_id",
+              "expectation",
+              "prompt",
+              "passed",
+              "checks",
+              "observed"
+            ],
+            "type": "object"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "failed_count": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "passed_count": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "reviewed_at": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "artifact_type",
+        "reviewed_at",
+        "case_count",
+        "passed_count",
+        "failed_count",
+        "all_passed",
+        "cases"
+      ],
+      "type": "object"
+    },
+    "summary": {
+      "additionalProperties": false,
+      "properties": {
+        "blocked_runs": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "human_gate_count": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "red_team_all_passed": {
+          "type": "boolean"
+        },
+        "red_team_case_count": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "total_estimated_cost_units": {
+          "minimum": 0,
+          "type": "number"
+        }
+      },
+      "required": [
+        "red_team_all_passed",
+        "red_team_case_count",
+        "blocked_runs",
+        "human_gate_count",
+        "total_estimated_cost_units"
+      ],
+      "type": "object"
+    }
+  },
+  "required": [
+    "artifact_type",
+    "generated_at",
+    "summary",
+    "metrics",
+    "red_team_review"
+  ],
+  "title": "Ops Kit Enterprise Controls Report",
+  "type": "object"
+}

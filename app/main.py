@@ -3,8 +3,10 @@ from __future__ import annotations
 from fastapi import FastAPI, HTTPException
 
 from app.langgraph_workflow import run_claim_review_graph
+from app.metrics import summarize_runs
 from app.models import ApprovalRequest, EvalResult, RunManifest, RunRequest, RunStatus
-from app.store import load_run, save_run
+from app.red_team import build_red_team_report
+from app.store import list_runs, load_run, save_run
 from app.workflow import create_run, evaluate_packet
 
 app = FastAPI(title="Agentic AI Ops Kit", version="0.1.0")
@@ -29,6 +31,16 @@ def post_langgraph_run(payload: RunRequest) -> RunManifest:
     return run
 
 
+@app.get("/metrics")
+def get_metrics():
+    return summarize_runs(list_runs())
+
+
+@app.get("/red-team/report")
+def get_red_team_report():
+    return build_red_team_report()
+
+
 @app.get("/runs/{run_id}", response_model=RunManifest)
 def get_run(run_id: str) -> RunManifest:
     try:
@@ -50,6 +62,17 @@ def get_artifacts(run_id: str):
         "eval": run.eval,
         "policy_gate": run.policy_gate,
         "retrieved_sources": run.retrieved_sources,
+        "routing": {
+            "task_class": run.task_class,
+            "complexity": run.complexity,
+            "selected_lane": run.selected_lane,
+            "provider_id": run.provider_id,
+            "estimated_cost_units": run.estimated_cost_units,
+            "requires_human_gate": run.requires_human_gate,
+            "blocked_action": run.blocked_action,
+            "failure_or_escalation_reason": run.failure_or_escalation_reason,
+            "routing_reason": run.routing_reason,
+        },
     }
 
 

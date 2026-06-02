@@ -1,0 +1,169 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "properties": {
+    "all_passed": {
+      "type": "boolean"
+    },
+    "artifact_type": {
+      "const": "red_team_review"
+    },
+    "case_count": {
+      "minimum": 1,
+      "type": "integer"
+    },
+    "cases": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "case_id": {
+            "type": "string"
+          },
+          "checks": {
+            "additionalProperties": {
+              "type": "boolean"
+            },
+            "type": "object"
+          },
+          "expectation": {
+            "type": "string"
+          },
+          "observed": {
+            "additionalProperties": false,
+            "properties": {
+              "blocked_action": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "citations": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "estimated_cost_units": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "event_types": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "failure_or_escalation_reason": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "packet_created": {
+                "type": "boolean"
+              },
+              "provider_id": {
+                "type": "string"
+              },
+              "requires_human_gate": {
+                "type": "boolean"
+              },
+              "routing_reason": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "run_id": {
+                "type": "string"
+              },
+              "selected_lane": {
+                "type": "string"
+              },
+              "status": {
+                "enum": [
+                  "pending_human_approval",
+                  "human_review_required",
+                  "approved",
+                  "rejected",
+                  "escalated"
+                ]
+              },
+              "tool_call_count": {
+                "minimum": 0,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "run_id",
+              "status",
+              "selected_lane",
+              "provider_id",
+              "estimated_cost_units",
+              "requires_human_gate",
+              "blocked_action",
+              "tool_call_count",
+              "packet_created",
+              "citations",
+              "event_types",
+              "routing_reason",
+              "failure_or_escalation_reason"
+            ],
+            "type": "object"
+          },
+          "passed": {
+            "type": "boolean"
+          },
+          "prompt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "case_id",
+          "expectation",
+          "prompt",
+          "passed",
+          "checks",
+          "observed"
+        ],
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "failed_count": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "passed_count": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "reviewed_at": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "artifact_type",
+    "reviewed_at",
+    "case_count",
+    "passed_count",
+    "failed_count",
+    "all_passed",
+    "cases"
+  ],
+  "title": "Ops Kit Red Team Review",
+  "type": "object"
+}

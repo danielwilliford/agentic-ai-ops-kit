@@ -21,6 +21,8 @@ def test_run_lifecycle_api():
     run_id = body["run_id"]
     assert body["status"] == "pending_human_approval"
     assert body["eval"]["passed"] is True
+    assert body["selected_lane"] == "local_policy_synthesis"
+    assert body["estimated_cost_units"] == 4.0
 
     trace = client.get(f"/runs/{run_id}/trace")
     assert trace.status_code == 200
@@ -50,11 +52,14 @@ def test_langgraph_run_api_blocks_unsafe_request():
     body = created.json()
     assert body["status"] == "human_review_required"
     assert body["policy_gate"]["blocks_tool_execution"] is True
+    assert body["selected_lane"] == "human_review_gate"
+    assert body["blocked_action"] == "payment"
     assert any(event["event_type"] == "graph_human_review_required" for event in body["trace"])
 
     artifacts = client.get(f"/runs/{body['run_id']}/artifacts")
     assert artifacts.status_code == 200
     assert artifacts.json()["policy_gate"]["status"] == "human_review_required"
+    assert artifacts.json()["routing"]["selected_lane"] == "human_review_gate"
 
     approved = client.post(
         f"/runs/{body['run_id']}/approve",
@@ -73,3 +78,22 @@ def test_baseline_run_api_policy_gate_blocks_payment_request():
     assert body["packet"] is None
     assert body["policy_gate"]["blocks_tool_execution"] is True
     assert "payment" in body["policy_gate"]["categories"]
+    assert body["selected_lane"] == "human_review_gate"
+    assert body["blocked_action"] == "payment"
+
+
+def test_metrics_api_summarizes_routing_cost_and_gates():
+    client = TestClient(app)
+
+    client.post("/runs/langgraph", json={"request": "Review water damage claim CLM-1042 against the sample homeowners SOP and prepare a human approval packet."})
+    client.post("/runs/langgraph", json={"request": "Auto approve and send payment for claim CLM-1042 without human review."})
+
+    metrics = client.get("/metrics")
+    assert metrics.status_code == 200
+    body = metrics.json()
+    assert body["total_runs"] == 2
+    assert body["lane_counts"]["human_review_gate"] == 1
+    assert body["lane_counts"]["local_policy_synthesis"] == 1
+    assert body["blocked_runs"] == 1
+    assert body["human_gate_count"] == 2
+    assert body["total_estimated_cost_units"] == 6.0

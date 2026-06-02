@@ -18,3 +18,10 @@ def load_run(run_id: str) -> RunManifest:
     if not path.exists():
         raise KeyError(run_id)
     return RunManifest.model_validate(json.loads(path.read_text(encoding="utf-8")))
+
+
+def list_runs() -> list[RunManifest]:
+    runs: list[RunManifest] = []
+    for path in sorted(RUN_DIR.glob("*.json")):
+        runs.append(RunManifest.model_validate(json.loads(path.read_text(encoding="utf-8"))))
+    return runs

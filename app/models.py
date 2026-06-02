@@ -80,6 +80,15 @@ class RunManifest(BaseModel):
     retrieved_sources: list[RetrievedSource] = Field(default_factory=list)
     tool_calls: list[ToolCall] = Field(default_factory=list)
     trace: list[TraceEvent] = Field(default_factory=list)
+    task_class: str | None = None
+    complexity: int | None = Field(default=None, ge=0, le=10)
+    selected_lane: str | None = None
+    provider_id: str | None = None
+    estimated_cost_units: float = Field(default=0.0, ge=0)
+    requires_human_gate: bool = False
+    blocked_action: str | None = None
+    failure_or_escalation_reason: str | None = None
+    routing_reason: str | None = None
     human_decision: str | None = None
 
 

@@ -1,0 +1,23 @@
+{
+  "avg_eval_score": 100,
+  "blocked_runs": 3,
+  "eval_pass_count": 2,
+  "human_gate_count": 5,
+  "lane_counts": {
+    "hosted_fallback_dry_run": 1,
+    "human_review_gate": 3,
+    "local_policy_synthesis": 1
+  },
+  "risk_flag_counts": {
+    "missing_source_citations": 1,
+    "policy_gate_human_review_required": 1,
+    "repaired_missing_citations_with_manual_review": 1,
+    "requires_human_approval_before_action": 1
+  },
+  "status_counts": {
+    "human_review_required": 3,
+    "pending_human_approval": 2
+  },
+  "total_estimated_cost_units": 20.0,
+  "total_runs": 5
+}

@@ -3,6 +3,7 @@ from __future__ import annotations
 from app.models import DecisionPacket, EvalResult, RunManifest, RunStatus, TraceEvent
 from app.policy import evaluate_policy_gate
 from app.retrieval import retrieve
+from app.routing import apply_route_fields, route_request
 from app.tools import build_timeline, classify_risk, extract_entities
 
 
@@ -20,6 +21,9 @@ def create_run(request: str) -> RunManifest:
     policy_gate = evaluate_policy_gate(request)
     manifest.policy_gate = policy_gate
     manifest.trace.append(TraceEvent.make("policy_gate_evaluated", policy_gate.model_dump()))
+    route = route_request(request, policy_gate)
+    apply_route_fields(manifest, route)
+    manifest.trace.append(TraceEvent.make("routing_completed", route))
     if policy_gate.blocks_tool_execution:
         manifest.status = RunStatus.HUMAN_REVIEW_REQUIRED
         manifest.human_decision = "system: policy gate requires human review before tool execution"

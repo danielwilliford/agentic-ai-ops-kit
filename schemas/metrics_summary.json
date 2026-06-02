@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "properties": {
+    "avg_eval_score": {
+      "anyOf": [
+        {
+          "maximum": 100,
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "blocked_runs": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "eval_pass_count": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "human_gate_count": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "lane_counts": {
+      "additionalProperties": {
+        "minimum": 0,
+        "type": "integer"
+      },
+      "type": "object"
+    },
+    "risk_flag_counts": {
+      "additionalProperties": {
+        "minimum": 0,
+        "type": "integer"
+      },
+      "type": "object"
+    },
+    "status_counts": {
+      "additionalProperties": {
+        "minimum": 0,
+        "type": "integer"
+      },
+      "type": "object"
+    },
+    "total_estimated_cost_units": {
+      "minimum": 0,
+      "type": "number"
+    },
+    "total_runs": {
+      "minimum": 0,
+      "type": "integer"
+    }
+  },
+  "required": [
+    "total_runs",
+    "status_counts",
+    "lane_counts",
+    "human_gate_count",
+    "blocked_runs",
+    "eval_pass_count",
+    "avg_eval_score",
+    "total_estimated_cost_units",
+    "risk_flag_counts"
+  ],
+  "title": "Ops Kit Metrics Summary",
+  "type": "object"
+}

@@ -7,6 +7,7 @@ from langgraph.graph import END, StateGraph
 from app.models import DecisionPacket, EvalResult, PolicyGateResult, RetrievedSource, RunManifest, RunStatus, ToolCall, TraceEvent
 from app.policy import evaluate_policy_gate
 from app.retrieval import retrieve
+from app.routing import apply_route_fields, route_request
 from app.tools import build_timeline, classify_risk, extract_entities
 from app.workflow import evaluate_packet, resolve_role
 
@@ -27,6 +28,7 @@ class ClaimReviewState(TypedDict):
     eval: NotRequired[EvalResult]
     repair_attempts: NotRequired[int]
     approval_status: NotRequired[str]
+    route: NotRequired[dict[str, object]]
 
 
 def _trace(state: ClaimReviewState, event_type: str, detail: dict) -> None:
@@ -38,6 +40,8 @@ def preflight(state: ClaimReviewState) -> ClaimReviewState:
     flags = []
     policy_gate = evaluate_policy_gate(request)
     state["policy_gate"] = policy_gate
+    route = route_request(request, policy_gate)
+    state["route"] = route
     if policy_gate.categories:
         flags.append("policy_gate_human_review_required")
     if policy_gate.blocks_tool_execution:
@@ -56,6 +60,7 @@ def preflight(state: ClaimReviewState) -> ClaimReviewState:
         "graph_policy_gate",
         policy_gate.model_dump(),
     )
+    _trace(state, "graph_route", route)
     _trace(state, "graph_preflight", {"role": state["role"], "risk_flags": flags})
     return state
 
@@ -240,6 +245,8 @@ def run_claim_review_graph(request: str) -> RunManifest:
     else:
         manifest.status = RunStatus.ESCALATED
     manifest.policy_gate = final.get("policy_gate")
+    if "route" in final:
+        apply_route_fields(manifest, final["route"])
     manifest.retrieved_sources = final.get("retrieved_sources", [])
     manifest.tool_calls = final.get("tool_calls", [])
     manifest.packet = final.get("packet")
